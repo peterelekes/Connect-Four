@@ -6,12 +6,10 @@ def menu(request):
     if request.method == 'POST':
         if 'pvp' in request.POST:
             game = ConnectFourGame.objects.create(vs_computer=False)
-            game.save()
-            return redirect('play_game', game_id=game.id, permanent=True)
+            return redirect('play_game', game_id=game.id)
         elif 'vs_computer' in request.POST:
             game = ConnectFourGame.objects.create(vs_computer=True)
-            game.save()
-            return redirect('play_game', game_id=game.id, permanent=True)
+            return redirect('play_game', game_id=game.id)
     return render(request, 'menu.html')
 
 

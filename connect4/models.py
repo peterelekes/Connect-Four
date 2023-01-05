@@ -1,22 +1,22 @@
 from django.db import models
 import random
+import json
 
 class ConnectFourGame(models.Model):
-    board = [
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    ]
     game_over = models.BooleanField(default=False)
     winner = models.CharField(max_length=1, blank=True)
     vs_computer = models.BooleanField(default=False)
     current_player = models.CharField(max_length=1, default='R')
-
+    board = models.JSONField(default=[ [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                                    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                                    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                                    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                                    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                                    [' ', ' ', ' ', ' ', ' ', ' ', ' ']])
 
     def make_move(self, column):
+        #convert self.board to 6*7 matrix of chars
+
         board = self.board
         for row in reversed(range(6)):
             if board[row][column] == ' ':
@@ -67,7 +67,7 @@ class ConnectFourGame(models.Model):
         column = random.randint(0, 6)
         self.make_move(column)
         return column
-    
+
     def reset_game(self):
         self.board = [
         [' ', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -81,6 +81,7 @@ class ConnectFourGame(models.Model):
         self.winner = ''
         self.vs_computer = False
         self.current_player = 'R'
+        self.save()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
