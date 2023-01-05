@@ -1,0 +1,10 @@
+<!-- game_over.html -->
+{% if game.winner %}
+    <h1>The winner is {{ game.winner }}!</h1>
+{% else %}
+    <h1>It's a tie!</h1>
+{% endif %}
+
+<p>
+    <a href="{% url 'menu' %}">Back to the menu!</a>
+</p>

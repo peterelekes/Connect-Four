@@ -1,0 +1,10 @@
+<!-- menu.html -->
+<h1>Welcome to Connect Four!</h1>
+
+<p>Please choose an option:</p>
+
+<form method="post">
+    {% csrf_token %}
+    <input type="submit" name="pvp" value="Play PvP">
+    <input type="submit" name="vs_computer" value="Play against the computer">
+</form>

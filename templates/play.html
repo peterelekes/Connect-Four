@@ -1,0 +1,64 @@
+<!-- play.html -->
+{% load static %}
+
+<style>
+    table {
+        border-collapse: collapse;
+    }
+
+    td {
+        width: 50px;
+        height: 50px;
+        border: 1px solid #ccc;
+        text-align: center;
+    }
+</style>
+
+<!-- display current player -->
+<p>Current player: {% if player == 'R' %}Red{% else %}Yellow{% endif %}</p>
+
+<form method="post" id="form">
+    {% csrf_token %}
+    <!-- i want to be able to determine each coins position in the table and i want to be able to click the columns
+    to drop the coin in the table -->
+    <!-- if 'Y' then yellow.png etc etc-->
+    <table>
+        {% for row in game.board %}
+            <tr>
+                {% for coin in row %}
+                    {% if coin == 'R' %}
+                        <td><img src="{% static 'red.png' %}" width="30" height="30" onclick="selectColumn(this)"></td>
+                    {% elif coin == 'Y' %}
+                        <td><img src="{% static 'yellow.png' %}" width="30" height="30" onclick="selectColumn(this)"></td>
+                    {% else %}
+                        <td><img src = "{% static 'empty.png' %}" width="30" height="30" onclick="selectColumn(this)"></td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</form>
+`
+
+<!-- button for leaving game -->
+<form action="{% url 'menu' %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Leave Game">
+</form>
+
+
+<script>
+    function selectColumn(coin) {
+        var column = coin.parentNode.cellIndex;
+        console.log(column);
+        //i want to POST the column number to the server
+        //how do i do that?
+        var form = document.getElementById("form");
+        var columnInput = document.createElement("input");
+        columnInput.type = "hidden";
+        columnInput.name = "column";
+        columnInput.value = column;
+        form.appendChild(columnInput);
+        form.submit();
+    }
+</script>
