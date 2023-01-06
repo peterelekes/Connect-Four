@@ -66,7 +66,7 @@ def play_game(request, game_id):
 def game_over(request, game_id):
     global current_time
     game = get_object_or_404(ConnectFourGame, pk=game_id)
-    game.game_time = '{:.2f}'.format(time.time() - current_time)
+    game.game_time = '{:.2f}'.format(float(time.time() - current_time))
     print(">>MESSAGE: Game ended. Lasted: " + str(game.game_time) + " seconds")
     return render(request, 'game_over.html', {'game': game})
 
@@ -74,9 +74,8 @@ def end_session(request):
     if request.method == 'POST':
         start_time = request.COOKIES.get('session_time')
         if start_time:
-            elapsed_time = time.time() - start_time
-            response = HttpResponse("Session ended. Elapsed time: " + str(elapsed_time) + " seconds.")
-            print("Session ended. Elapsed time: " + str(elapsed_time) + " seconds.")
-            return response
+            elapsed_time = time.time() - float(start_time)
+            print("Session ended. Elapsed time: " + str('{:.2f}'.format(elapsed_time)) + " seconds.")
+            return HttpResponse()  # Return empty response
         else:
             return HttpResponse("Start time cookie not found.")
