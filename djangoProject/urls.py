@@ -19,7 +19,9 @@ from django.contrib import admin
 from connect4 import views
 
 urlpatterns = [
+    path('', views.start_session, name='start_session'),
     path('', views.menu, name='menu'),
+    path('', views.end_session, name='end_session'),
     path('admin/', admin.site.urls),
-    path('connect4/', include('connect4.urls')),
+    path('connect4/', include('connect4.urls'))
 ]

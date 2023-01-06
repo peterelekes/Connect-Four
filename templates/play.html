@@ -29,9 +29,11 @@
                     {% if coin == 'R' %}
                         <td><img src="{% static 'red.png' %}" width="30" height="30" onclick="selectColumn(this)"></td>
                     {% elif coin == 'Y' %}
-                        <td><img src="{% static 'yellow.png' %}" width="30" height="30" onclick="selectColumn(this)"></td>
+                        <td><img src="{% static 'yellow.png' %}" width="30" height="30" onclick="selectColumn(this)">
+                        </td>
                     {% else %}
-                        <td><img src = "{% static 'empty.png' %}" width="30" height="30" onclick="selectColumn(this)"></td>
+                        <td><img src="{% static 'empty.png' %}" width="30" height="30" onclick="selectColumn(this)">
+                        </td>
                     {% endif %}
                 {% endfor %}
             </tr>
@@ -51,8 +53,6 @@
     function selectColumn(coin) {
         var column = coin.parentNode.cellIndex;
         console.log(column);
-        //i want to POST the column number to the server
-        //how do i do that?
         var form = document.getElementById("form");
         var columnInput = document.createElement("input");
         columnInput.type = "hidden";
@@ -61,4 +61,16 @@
         form.appendChild(columnInput);
         form.submit();
     }
+</script>
+
+<script>
+    window.addEventListener("beforeunload", function (event) {
+        // Send HTTP request to server
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/end_session", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("X-CSRFToken", csrf_token);  // Set CSRF token
+        xhr.send();
+    });
+
 </script>

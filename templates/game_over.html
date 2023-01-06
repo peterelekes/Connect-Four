@@ -8,3 +8,15 @@
 <p>
     <a href="{% url 'menu' %}">Back to the menu!</a>
 </p>
+
+<script>
+    window.addEventListener("beforeunload", function (event) {
+        // Send HTTP request to server
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/end_session", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("X-CSRFToken", csrf_token);  // Set CSRF token
+        xhr.send();
+    });
+
+</script>
