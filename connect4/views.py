@@ -39,7 +39,9 @@ def play_game(request, game_id):
     game = get_object_or_404(ConnectFourGame, pk=game_id)
     player = game.current_player
     if game.game_over:
-        return redirect('game_over', game_id=game.id)
+        global current_time
+        game.game_time = '{:.2f}'.format(float(time.time() - current_time))
+        print(">>MESSAGE: Game ended. Lasted: " + str(game.game_time) + " seconds")
     #check if pvp or vs computer
     if game.vs_computer:
         if game.current_player == 'Y':
@@ -63,13 +65,6 @@ def play_game(request, game_id):
             game.save()
             return redirect('play_game', game_id=game.id)
     return render(request, 'play.html', {'game': game, 'player': player})
-
-def game_over(request, game_id):
-    global current_time
-    game = get_object_or_404(ConnectFourGame, pk=game_id)
-    game.game_time = '{:.2f}'.format(float(time.time() - current_time))
-    print(">>MESSAGE: Game ended. Lasted: " + str(game.game_time) + " seconds")
-    return render(request, 'game_over.html', {'game': game})
 
 def end_session(request):
     if request.method == 'POST':
