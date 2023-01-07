@@ -43,8 +43,8 @@ def play_game(request, game_id):
     #check if pvp or vs computer
     if game.vs_computer:
         if game.current_player == 'Y':
-            game.check_for_winner()
             game.make_computer_move()
+            game.check_for_winner()
             game.save()
             return redirect('play_game', game_id=game.id)
         if request.method == 'POST':

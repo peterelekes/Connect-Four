@@ -277,7 +277,7 @@ class ConnectFourGame(models.Model):
 
     def make_computer_move(self):
         board_copy = copy.deepcopy(self.board)
-        column = pick_best_move(self.board, AI_PIECE)
+        column = pick_best_move(board_copy, AI_PIECE)
         message = MakeMoveMessage(column=column)
         self.make_move(message)
         return column

@@ -8,6 +8,10 @@
 <p>
     <a href="{% url 'menu' %}">Back to the menu!</a>
 </p>
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+</form>
 
 <script>
     // Set flag to false when the window is closed
