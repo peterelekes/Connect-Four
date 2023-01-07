@@ -26,6 +26,11 @@
 <!-- display current player -->
 <p>Current player: {% if player == 'R' %}Red{% else %}Yellow{% endif %}</p>
 
+{% if game.game_over %}
+    <h1>Game over!</h1>
+    <h1>Winner: {% if game.winner == 'R' %}Red{% else %}Yellow{% endif %}</h1>
+{% endif %}
+
 <form method="post" id="form">
     {% csrf_token %}
     <table>
@@ -66,7 +71,9 @@
         columnInput.name = "column";
         columnInput.value = column;
         form.appendChild(columnInput);
-        form.submit();
+        {% if game.winner != 'R' and game.winner != 'Y' %}
+            form.submit();
+        {% endif %}
     }
 </script>
 
