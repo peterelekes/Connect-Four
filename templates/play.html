@@ -19,9 +19,6 @@
 
 <form method="post" id="form">
     {% csrf_token %}
-    <!-- i want to be able to determine each coins position in the table and i want to be able to click the columns
-    to drop the coin in the table -->
-    <!-- if 'Y' then yellow.png etc etc-->
     <table>
         {% for row in game.board %}
             <tr>

@@ -43,13 +43,14 @@ def play_game(request, game_id):
     #check if pvp or vs computer
     if game.vs_computer:
         if game.current_player == 'Y':
-            game.make_computer_move()
             game.check_for_winner()
+            game.make_computer_move()
             game.save()
             return redirect('play_game', game_id=game.id)
         if request.method == 'POST':
             column = int(request.POST['column'])
-            game.make_move(column)
+            message = MakeMoveMessage(column=column)
+            game.make_move(message)
             game.check_for_winner()
             game.save()
             return redirect('play_game', game_id=game.id)
