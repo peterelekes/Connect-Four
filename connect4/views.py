@@ -71,7 +71,7 @@ def end_session(request):
         start_time = request.COOKIES.get('session_time')
         if start_time:
             elapsed_time = time.time() - float(start_time)
-            print("Session ended. Elapsed time: " + str('{:.2f}'.format(elapsed_time)) + " seconds.")
+            print(">>MESSAGE: Session ended. Elapsed time: " + str('{:.2f}'.format(elapsed_time)) + " seconds.")
             return HttpResponse()  # Return empty response
         else:
-            return HttpResponse("Start time cookie not found.")
+            return HttpResponse(">>ERROR: Start time cookie not found.")
