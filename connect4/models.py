@@ -2,7 +2,6 @@ from typing import Union
 
 from django.db import models
 import random
-import json
 import math
 import copy
 
