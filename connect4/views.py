@@ -27,8 +27,9 @@ def menu(request):
             game.game_time = current_time
             return redirect('play_game', game_id=game.id)
         elif 'vs_computer' in request.POST:
-            game = ConnectFourGame.objects.create(vs_computer=True)
-            print(">>MESSAGE: Player vs Computer game started.")
+            difficulty = request.POST['pvc']
+            game = ConnectFourGame.objects.create(vs_computer=True, difficulty=difficulty)
+            print(">>MESSAGE: Player vs Computer game started with difficulty: " + str(difficulty) + ".")
             current_time = time.time()
             game.game_time = current_time
             return redirect('play_game', game_id=game.id)
@@ -42,28 +43,29 @@ def play_game(request, game_id):
         global current_time
         game.game_time = '{:.2f}'.format(float(time.time() - current_time))
         print(">>MESSAGE: Game ended. Lasted: " + str(game.game_time) + " seconds")
-    #check if pvp or vs computer
-    if game.vs_computer:
-        if game.current_player == 'Y':
-            game.make_computer_move()
-            game.check_for_winner()
-            game.save()
-            return redirect('play_game', game_id=game.id)
-        if request.method == 'POST':
-            column = int(request.POST['column'])
-            message = MakeMoveMessage(column=column)
-            game.make_move(message)
-            game.check_for_winner()
-            game.save()
-            return redirect('play_game', game_id=game.id)
     else:
-        if request.method == 'POST':
-            column = int(request.POST['column'])
-            message = MakeMoveMessage(column = column)
-            game.make_move(message)
-            game.check_for_winner()
-            game.save()
-            return redirect('play_game', game_id=game.id)
+        #check if pvp or vs computer
+        if game.vs_computer:
+            if game.current_player == 'Y':
+                game.make_computer_move()
+                game.check_for_winner()
+                game.save()
+                return redirect('play_game', game_id=game.id)
+            if request.method == 'POST':
+                column = int(request.POST['column'])
+                message = MakeMoveMessage(column=column)
+                game.make_move(message)
+                game.check_for_winner()
+                game.save()
+                return redirect('play_game', game_id=game.id)
+        else:
+            if request.method == 'POST':
+                column = int(request.POST['column'])
+                message = MakeMoveMessage(column = column)
+                game.make_move(message)
+                game.check_for_winner()
+                game.save()
+                return redirect('play_game', game_id=game.id)
     return render(request, 'play.html', {'game': game, 'player': player})
 
 def end_session(request):

@@ -14,6 +14,17 @@
     <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
     <input type="submit" name="pvp" value="Play PvP">
     <input type="submit" name="vs_computer" value="Play against the computer">
+    <br>
+    <br>
+    <br>
+    <b>Choose difficulty: </b>
+    <select name="pvc">
+        <option value="1">Play against the computer (easy)</option>
+        <option value="2">Play against the computer (medium)</option>
+        <option value="3">Play against the computer (hard)</option>
+        <option value="4">Play against the computer (impossible)</option>
+        <option value="5">Play against the computer (impossible+)</option>
+    </select>
 </form>
 
 <script>

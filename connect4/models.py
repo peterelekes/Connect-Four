@@ -2,6 +2,7 @@ from typing import Union
 
 from django.db import models
 import random
+import json
 import math
 import copy
 
@@ -14,35 +15,32 @@ AI_PIECE = 'Y'
 
 
 def check_for_which_winner(board, piece):
-    for row in range(6):
-        for column in range(4):
-            if board[row][column] == ' ':
-                continue
-            if board[row][column] and board[row][column + 1] and board[row][column + 2] and board[row][
-                column + 3] == piece:
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(ROW_COUNT):
+            if board[r][c] == piece and board[r][c + 1] == piece and board[r][c + 2] == piece and board[r][
+                c + 3] == piece:
                 return True
-    for row in range(3):
-        for column in range(7):
-            if board[row][column] == ' ':
-                continue
-            if board[row][column] and board[row + 1][column] and board[row + 2][column] and board[row + 3][
-                column] == piece:
+
+    # Check vertical locations for win
+    for c in range(COLUMN_COUNT):
+        for r in range(ROW_COUNT - 3):
+            if board[r][c] == piece and board[r + 1][c] == piece and board[r + 2][c] == piece and board[r + 3][
+                c] == piece:
                 return True
-    for row in range(3):
-        for column in range(4):
-            if board[row][column] == ' ':
-                continue
-            if board[row][column] and board[row + 1][column + 1] and board[row + 2][column + 2] and board[row + 3][
-                column + 3] == piece:
+
+    # Check positively sloped diaganols
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(ROW_COUNT - 3):
+            if board[r][c] == piece and board[r + 1][c + 1] == piece and board[r + 2][c + 2] == piece and board[r + 3][
+                c + 3] == piece:
                 return True
-    for row in range(3, 6):
-        for column in range(4):
-            if board[row][column] == ' ':
-                continue
-            if board[row][column] and board[row - 1][column + 1] and board[row - 2][column + 2] and board[row - 3][
-                column + 3] == piece:
+
+    # Check negatively sloped diaganols
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(3, ROW_COUNT):
+            if board[r][c] == piece and board[r - 1][c + 1] == piece and board[r - 2][c + 2] == piece and board[r - 3][
+                c + 3] == piece:
                 return True
-    return False
 
 
 def drop_piece(board, col, piece):
@@ -80,47 +78,7 @@ def evaluate_window(window, piece):
 
 
 def is_terminal_node(board):
-    return check_for_which_winner(board, PLAYER_PIECE) or check_for_which_winner(board, AI_PIECE) or len(
-        get_valid_locations(board)) == 0
-
-
-def minimax(board, depth, maximizingPlayer):
-    valid_locations = get_valid_locations(board)
-    is_terminal = is_terminal_node(board)
-    if depth == 0 or is_terminal:
-        if is_terminal:
-            if check_for_which_winner(board, AI_PIECE):
-                return (None, 100000)
-            elif check_for_which_winner(board, PLAYER_PIECE):
-                return (None, -100000)
-            else:
-                return (None, 0)
-        else:  # Depth is zero
-            return (None, score_position(board, AI_PIECE))
-    if maximizingPlayer:
-        value = -math.inf
-        column = random.choice(valid_locations)
-        for col in valid_locations:
-            b_copy = copy.deepcopy(board)
-            drop_piece(b_copy, col, AI_PIECE)
-            print(b_copy)
-            new_score = minimax(b_copy, depth - 1, False)[1]
-            if new_score > value:
-                value = new_score
-                column = col
-        return column, value
-    else:  # Minimizing player
-        value = math.inf
-        column = random.choice(valid_locations)
-        for col in valid_locations:
-            b_copy = board.copy()
-            drop_piece(b_copy, col, PLAYER_PIECE)
-            print(b_copy)
-            new_score = minimax(b_copy, depth - 1, True)[1]
-            if new_score < value:
-                value = new_score
-                column = col
-        return column, value
+    return check_for_which_winner(board, PLAYER_PIECE) or check_for_which_winner(board, AI_PIECE) or len(get_valid_locations(board)) == 0
 
 
 def score_position(board, piece):
@@ -167,6 +125,115 @@ def get_valid_locations(board):
             valid_locations.append(col)
     return valid_locations
 
+def prettyPrint(board):
+    for row in range(ROW_COUNT):
+        print("[", end=" ")
+        for col in range(COLUMN_COUNT):
+            print(board[row][col],end=", ")
+        print("]")
+    print()
+
+def minimax(board, depth, maximizingPlayer):
+    valid_locations = get_valid_locations(board)
+    is_terminal = is_terminal_node(board)
+    if depth == 0 or is_terminal:
+        if is_terminal:
+            if check_for_which_winner(board, AI_PIECE):
+                return (None, 100000)
+            elif check_for_which_winner(board, PLAYER_PIECE):
+                return (None, -100000)
+            else:
+                return (None, -100)
+        else:  # Depth is zero
+            return (None, score_position(board, AI_PIECE))
+    if maximizingPlayer:
+        value = -math.inf
+        column = random.choice(valid_locations)
+        for col in valid_locations:
+            b_copy = copy.deepcopy(board)
+            drop_piece(b_copy, col, AI_PIECE)
+            new_score = minimax(b_copy, depth-1, False)[1]
+            if new_score > value:
+                value = new_score
+                column = col
+        return column, value
+    else:
+        value = math.inf
+        column = random.choice(valid_locations)
+        for col in valid_locations:
+            b_copy = copy.deepcopy(board)
+            drop_piece(b_copy, col, PLAYER_PIECE)
+            new_score = minimax(b_copy, depth-1, True)[1]
+            if new_score < value:
+                value = new_score
+                column = col
+        return column, value
+
+
+def minimax_alphabeta(board, depth, alpha, beta, maximizingPlayer):
+    valid_locations = get_valid_locations(board)
+    is_terminal = is_terminal_node(board)
+    if depth == 0 or is_terminal:
+        if is_terminal:
+            if check_for_which_winner(board, AI_PIECE):
+                return (None, 100000)
+            elif check_for_which_winner(board, PLAYER_PIECE):
+                return (None, -100000)
+            else:
+                return (None, 0)
+        else: # Depth is zero
+            return (None, score_position(board, AI_PIECE))
+    if maximizingPlayer:
+        value = -math.inf
+        column = random.choice(valid_locations)
+        for col in valid_locations:
+            b_copy = copy.deepcopy(board)
+            drop_piece(b_copy, col, AI_PIECE)
+            new_score = minimax_alphabeta(b_copy, depth-1, alpha, beta, True)[1]
+            if new_score > value:
+                value = new_score
+                column = col
+                alpha = max(alpha, value)
+                if alpha >= beta:
+                    break
+                return column, value
+    else: # Minimizing player
+        value = math.inf
+        column = random.choice(valid_locations)
+        for col in valid_locations:
+            b_copy = copy.deepcopy(board)
+            drop_piece(b_copy, col, PLAYER_PIECE)
+            new_score = minimax_alphabeta(b_copy, depth-1, alpha, beta, False)[1]
+            if new_score < value:
+                value = new_score
+                column = col
+                beta = min(beta, value)
+                if alpha >= beta:
+                    break
+            return column, value
+
+def get_valid_locations(board):
+    valid_locations = []
+    for col in range(COLUMN_COUNT):
+        if is_valid_location(board, col):
+            valid_locations.append(col)
+    return valid_locations
+
+def get_best_move(board, AI_PIECE):
+    valid_locations = get_valid_locations(board)
+    best_score = -10000
+    best_col = random.choice(valid_locations)
+    for col in valid_locations:
+        temp_board = copy.deepcopy(board)
+        drop_piece(temp_board, col, AI_PIECE)
+        column, score = minimax_alphabeta(temp_board, 3, -math.inf, math.inf, True, AI_PIECE, PLAYER_PIECE)
+        if score > best_score:
+            best_score = score
+            best_col = column
+    return best_col
+
+
+
 
 def pick_best_move(board, piece):
     valid_locations = get_valid_locations(board)
@@ -176,7 +243,6 @@ def pick_best_move(board, piece):
         row = get_next_open_row(board, col)
         temp_board = copy.deepcopy(board)
         drop_piece(temp_board, col, piece)
-        board[ROW_COUNT - 1 - row][col] = ' '
         score = score_position(temp_board, piece)
         if score > best_score:
             best_score = score
@@ -202,6 +268,7 @@ class WinnerMessage:
 
 class ConnectFourGame(models.Model):
     game_time = 0
+    difficulty = models.IntegerField(default=1)
     game_over = models.BooleanField(default=False)
     winner = models.CharField(max_length=1, blank=True)
     vs_computer = models.BooleanField(default=False)
@@ -276,7 +343,7 @@ class ConnectFourGame(models.Model):
 
     def make_computer_move(self):
         board_copy = copy.deepcopy(self.board)
-        column = pick_best_move(board_copy, AI_PIECE)
+        column=minimax(board_copy,self.difficulty,True)[0]
         message = MakeMoveMessage(column=column)
         self.make_move(message)
         return column
