@@ -263,7 +263,7 @@ class WinnerMessage:
         self.winner = winner
 
     def __str__(self):
-        return f'Winner is  {self.winner}'
+        return f'Winner is {self.winner}'
 
 
 class ConnectFourGame(models.Model):
