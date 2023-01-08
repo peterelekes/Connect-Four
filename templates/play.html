@@ -1,3 +1,34 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Codespaces
+Marketplace
+Explore
+ 
+@peterelekes 
+peterelekes
+/
+djangoProject
+Private
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+djangoProject/templates/play.html
+@peterelekes
+peterelekes centered the elements on the webpage
+Latest commit 4b09cdb yesterday
+ History
+ 2 contributors
+@peterelekes@Mexaby
+100 lines (86 sloc)  2.78 KB
+
 <!-- play.html -->
 
 <style>
@@ -24,12 +55,13 @@
 </style>
 
 <!-- display current player -->
+<p>Current player: {% if player == 'R' %}Red{% else %}Yellow{% endif %}</p>
 
 {% if game.game_over %}
     <h1>Game over!</h1>
     <h1>Winner: {% if game.winner == 'R' %}Red{% else %}Yellow{% endif %}</h1>
 {% else %}
-    <h1>Current player: {% if game.current_player == 'R' %}Red{% else %}Yellow{% endif %}</h1>
+    <p>Current player: {% if player == 'R' %}Red{% else %}Yellow{% endif %}</p>
 {% endif %}
 
 <form method="post" id="form">
@@ -99,3 +131,18 @@
         }
     }
 </script>
+Footer
+© 2023 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+djangoProject/play.html at master · peterelekes/djangoProject
